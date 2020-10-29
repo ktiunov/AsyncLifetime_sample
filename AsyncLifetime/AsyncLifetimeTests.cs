@@ -1,5 +1,5 @@
-using System;
 using AsyncLifetime.Payload;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AsyncLifetime
@@ -14,30 +14,36 @@ namespace AsyncLifetime
         }
 
         [Fact]
-        public void FirstFact()
+        public async Task FirstFact()
         {
             int actualInitializeCount = new AsyncService().InitializeCount;
             int actualDisposeCount = new AsyncService().DisposeCount;
+
+            await Task.Delay(200);
 
             Assert.Equal(1, actualInitializeCount);
             Assert.Equal(0, actualDisposeCount);
         }
 
         [Fact]
-        public void SecondFact()
+        public async Task SecondFact()
         {
             int actualInitializeCount = new AsyncService().InitializeCount;
             int actualDisposeCount = new AsyncService().DisposeCount;
+
+            await Task.Delay(200);
 
             Assert.Equal(1, actualInitializeCount);
             Assert.Equal(0, actualDisposeCount);
         }
 
         [Fact]
-        public void ThirdFact()
+        public async Task ThirdFact()
         {
             int actualInitializeCount = new AsyncService().InitializeCount;
             int actualDisposeCount = new AsyncService().DisposeCount;
+
+            await Task.Delay(200);
 
             Assert.Equal(1, actualInitializeCount);
             Assert.Equal(0, actualDisposeCount);

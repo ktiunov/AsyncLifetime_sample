@@ -6,14 +6,14 @@ namespace AsyncLifetime
 {
     public class AsyncLifetimeFixture : IAsyncLifetime
     {
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            return new AsyncService().InitializeAsync();
+            await new AsyncService().InitializeAsync().ConfigureAwait(false);
         }
 
-        public Task DisposeAsync()
+        public async Task DisposeAsync()
         {
-            return new AsyncService().DisposeAsync();
+            await new AsyncService().DisposeAsync().ConfigureAwait(false);
         }
     }
 }

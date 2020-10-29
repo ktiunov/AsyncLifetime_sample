@@ -24,11 +24,13 @@ namespace AsyncLifetime.Payload
 
         private static void IncrementInitializer()
         {
+            Thread.Sleep(200);
             Interlocked.Increment(ref _counterToInitialize);
         }
 
         private static void IncrementDispose()
         {
+            Thread.Sleep(200);
             Interlocked.Increment(ref _counterToDispose);
         }
     }
