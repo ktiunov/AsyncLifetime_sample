@@ -1,4 +1,7 @@
-using AsyncLifetime.Payload;
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -7,6 +10,7 @@ namespace AsyncLifetime
     public class AsyncLifetimeTests : IClassFixture<AsyncLifetimeFixture>
     {
         private readonly AsyncLifetimeFixture _fixture;
+        private static readonly HttpClient _httpClient = new HttpClient();
 
         public AsyncLifetimeTests(AsyncLifetimeFixture fixture)
         {
@@ -14,39 +18,27 @@ namespace AsyncLifetime
         }
 
         [Fact]
-        public async Task FirstFact()
+        public async Task Get_WaitResponse_AllDataRecieved()
         {
-            int actualInitializeCount = new AsyncService().InitializeCount;
-            int actualDisposeCount = new AsyncService().DisposeCount;
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5000");
+            using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
-            await Task.Delay(200);
+            response.EnsureSuccessStatusCode();
 
-            Assert.Equal(1, actualInitializeCount);
-            Assert.Equal(0, actualDisposeCount);
-        }
+            using Stream responseContent = await response.Content.ReadAsStreamAsync();
+            using var reader = new StreamReader(responseContent);
+            var buffer = new char[10];
+            var builder = new StringBuilder(20);
+            while (!reader.EndOfStream)
+            {
+                await reader.ReadAsync(buffer.AsMemory());
+                builder.Append(buffer);
+            }
 
-        [Fact]
-        public async Task SecondFact()
-        {
-            int actualInitializeCount = new AsyncService().InitializeCount;
-            int actualDisposeCount = new AsyncService().DisposeCount;
+            var responseString = builder.ToString();
 
-            await Task.Delay(200);
 
-            Assert.Equal(1, actualInitializeCount);
-            Assert.Equal(0, actualDisposeCount);
-        }
-
-        [Fact]
-        public async Task ThirdFact()
-        {
-            int actualInitializeCount = new AsyncService().InitializeCount;
-            int actualDisposeCount = new AsyncService().DisposeCount;
-
-            await Task.Delay(200);
-
-            Assert.Equal(1, actualInitializeCount);
-            Assert.Equal(0, actualDisposeCount);
+            Assert.NotEmpty(responseString);
         }
     }
 }
